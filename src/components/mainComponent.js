@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Home from './homeComponent';
 import Menu from './menuComponent';
-import Contact from './contactComponent'
+import Contact from './contactComponent';
+import About from './aboutComponent';
 import { DISHES } from '../shared/dishes';
 import { COMMENTS } from '../shared/comments'
 import { LEADERS } from '../shared/leaders'
@@ -41,6 +42,7 @@ class Main extends Component {
               comments={this.state.comments.filter((comment) => comment.dishId === parseInt(props.match.params.dishid, 10))} />
           } />
           <Route exact path="/contactus" component={() => <Contact />} />
+          <Route exact path="/aboutus" component={() => <About leaders={this.state.leaders} />} />
           <Redirect to="/home" />
         </Switch>
         <Footer />

@@ -3,29 +3,13 @@ import { Card, CardImg, CardText, CardBody, CardTitle, BreadcrumbItem, Breadcrum
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Loading } from './loadingComponent';
+import { baseUrl } from '../shared/baseURL';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components'
 
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
 const minLength = (len) => (val) => val && (val.length >= len);
-
-const MapComments = (props) => {
-  const comment = props.comments.map((com) => {
-    return (
-      <div key={com.id}>
-        <li>
-          <p>{com.comment}</p>
-          <p>
-            -- {com.author}, {new Intl.DateTimeFormat('en-US').format(new Date(Date.parse(com.date)))}
-          </p>
-        </li>
-      </div>
-    );
-  });
-  return (
-    <>{comment}</>
-  );
-}
 
 function RenderComments(props) {
   return (
@@ -36,9 +20,22 @@ function RenderComments(props) {
       </CardTitle>
       <CardBody>
         <ul className="list-unstyled">
-          <MapComments comments={props.comments} />
+          <Stagger in>
+            {props.comments.map((com) => {
+              return (
+                <Fade in>
+                  <li key={com.id}>
+                    <p>{com.comment}</p>
+                    <p>
+                      -- {com.author}, {new Intl.DateTimeFormat('en-US').format(new Date(Date.parse(com.date)))}
+                    </p>
+                  </li>
+                </Fade>
+              );
+            })}
+          </Stagger>
         </ul>
-        <CommentForm dishId={props.dishId} addComment={props.addComment} />
+        <CommentForm dishId={props.dishId} postComment={props.postComment} />
       </CardBody>
     </Card>
   );
@@ -46,13 +43,18 @@ function RenderComments(props) {
 
 function RenderDish({ dish }) {
   return (
-    <Card>
-      <CardImg width="100%" object src={dish.image} alt={dish.name} />
-      <CardBody>
-        <CardTitle heading>{dish.name}</CardTitle>
-        <CardText>{dish.description}</CardText>
-      </CardBody>
-    </Card>
+    <FadeTransform in
+      transformProps={{
+        exitTransform: 'scale(0.5) translateY(-50%)'
+      }}>
+      <Card>
+        <CardImg width="100%" object src={baseUrl + dish.image} alt={dish.name} />
+        <CardBody>
+          <CardTitle heading>{dish.name}</CardTitle>
+          <CardText>{dish.description}</CardText>
+        </CardBody>
+      </Card>
+    </FadeTransform>
   );
 }
 
@@ -74,7 +76,7 @@ class CommentForm extends Component {
 
   handleSubmit(values) {
     this.toggleModal();
-    this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+    this.props.postComment(this.props.dishId, values.rating, values.author, values.comment);
   }
 
   render() {
@@ -170,7 +172,7 @@ const DishDetails = (props) => {
             <RenderDish dish={props.dish} />
           </div>
           <div className="col-12 col-md-5 mt-1">
-            <RenderComments comments={props.comments} addComment={props.addComment} dishId={props.dish.id} />
+            <RenderComments comments={props.comments} postComment={props.postComment} dishId={props.dish.id} />
           </div>
         </div>
       </div>

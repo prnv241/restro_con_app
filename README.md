@@ -1,1 +1,1 @@
-Deployed on heroku link - https://restroconfusion2.herokuapp.com
+Restaurant menu and order application built using React.js and Redux.js
